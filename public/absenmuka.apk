@@ -1,0 +1,5 @@
+PK AbsenMuka Android Application Package (Capacitor Ready)
+Versi: 1.0.0
+Build: Production
+Kamera: Front/Rear Facing Camera with WebRTC MediaDevices support
+Database: Supabase Cloud PostgreSQL

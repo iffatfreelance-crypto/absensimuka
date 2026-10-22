@@ -1,0 +1,64 @@
+/* Hallmark Design Tokens · Genre: Modern-Minimal / Biometric School Portal · Theme: Cobalt Light */
+:root {
+  /* Typography - Clean, Crisp, Modern-Minimal */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Surfaces & Backgrounds - Clean Engineered Cool Canvas */
+  --bg-app: #f8fafc;        /* Slate 50 cool paper background */
+  --bg-surface: #ffffff;    /* Pure crisp white for cards and modals */
+  --bg-card: #ffffff;       /* Pure white card surface */
+  --bg-card-hover: #f0f7ff; /* Very soft light blue hover state */
+  --bg-elevated: #f0f7ff;   /* Fresh sky/ice blue tint for grouped areas */
+  --bg-glass: rgba(255, 255, 255, 0.9);
+  --bg-overlay: rgba(15, 23, 42, 0.5); /* Crisp dark veil for dialogs */
+
+  /* Hairlines & Dividers - 1px Crisp Borders */
+  --border-subtle: #e2e8f0; /* Slate 200 clean hairline */
+  --border-medium: #cbd5e1; /* Slate 300 divider */
+  --border-active: #0284c7; /* Sky 600 / Cobalt active border */
+
+  /* Text & Foreground - High Contrast WCAG AA/AAA */
+  --text-primary: #0f172a;   /* Slate 900 ink (15:1 contrast on white) */
+  --text-secondary: #334155; /* Slate 700 readable secondary */
+  --text-muted: #64748b;     /* Slate 500 metadata text */
+  --text-inverse: #ffffff;   /* Pure white text on dark accents */
+
+  /* Semantic Biometric Colors - School Blue / Cobalt Focus */
+  --biometric-cyan: #0284c7;        /* Sky 600 primary action/signal */
+  --biometric-cyan-hover: #0369a1;  /* Sky 700 pressed/hover */
+  --biometric-cyan-glow: rgba(2, 132, 199, 0.12);
+  
+  --status-success: #059669;        /* Emerald 600 */
+  --status-success-bg: #ecfdf5;     /* Emerald 50 */
+  --status-success-border: #a7f3d0; /* Emerald 200 */
+
+  --status-warning: #d97706;        /* Amber 600 */
+  --status-warning-bg: #fffbeb;     /* Amber 50 */
+  --status-warning-border: #fde68a; /* Amber 200 */
+
+  --status-danger: #e11d48;         /* Rose 600 */
+  --status-danger-bg: #fff1f2;      /* Rose 50 */
+  --status-danger-border: #fecdd3;  /* Rose 200 */
+
+  --status-info: #0284c7;           /* Sky 600 */
+  --status-info-bg: #f0f9ff;        /* Sky 50 */
+  --status-info-border: #bae6fd;    /* Sky 200 */
+
+  /* Tight Technical Radii (Hallmark Rule) */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  /* Subtle Crisp Elevation Shadows (No Fuzzy Muddy AI Shadows) */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.07), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
+  --shadow-hud: 0 8px 24px -4px rgba(2, 132, 199, 0.12);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
