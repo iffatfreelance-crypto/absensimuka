@@ -93,20 +93,20 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   }
 
   return (
-    <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {/* Student Profile Switcher & Today's Status Banner */}
-      <div className="card" style={{
+      <div className="card mobile-compact-p" style={{
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '1rem',
-        padding: '1.25rem 1.5rem',
+        gap: '0.75rem',
+        padding: '1rem 1.25rem',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
           <div style={{
-            width: '54px',
-            height: '54px',
+            width: '46px',
+            height: '46px',
             borderRadius: '50%',
             backgroundColor: 'var(--bg-elevated)',
             border: '2px solid var(--border-active)',
@@ -115,8 +115,9 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             justifyContent: 'center',
             color: 'var(--biometric-cyan)',
             fontWeight: 800,
-            fontSize: '1.25rem',
+            fontSize: '1.125rem',
             overflow: 'hidden',
+            flexShrink: 0,
           }}>
             {currentStudent?.avatar_url ? (
               <img src={currentStudent.avatar_url} alt={currentStudent.nama} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -126,13 +127,13 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
           </div>
 
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.125rem' }}>
               {currentUser ? (
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--biometric-cyan)', fontWeight: 700, textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--biometric-cyan)', fontWeight: 700, textTransform: 'uppercase' }}>
                     PROFIL SISWA AKTIF
                   </div>
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>{currentStudent?.nama}</h2>
+                  <h2 style={{ fontSize: '1.125rem', fontWeight: 800 }}>{currentStudent?.nama}</h2>
                 </div>
               ) : (
                 <>
@@ -149,7 +150,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       border: '1px solid var(--border-medium)',
                       borderRadius: 'var(--radius-sm)',
                       padding: '0.25rem 0.5rem',
-                      fontSize: '0.875rem',
+                      fontSize: '0.8125rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                     }}
@@ -163,7 +164,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                 </>
               )}
             </div>
-            <p className="mono" style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+            <p className="mono" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
               NIS: {currentStudent?.nis || '-'} · SIDIK WAJAH: {currentStudent?.face_descriptor ? 'TERDAFTAR' : 'BELUM AKTIF'}
             </p>
           </div>
@@ -175,18 +176,18 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.625rem',
+              gap: '0.5rem',
               backgroundColor: 'var(--status-success-bg)',
               border: '1px solid var(--status-success-border)',
-              padding: '0.625rem 1rem',
+              padding: '0.5rem 0.875rem',
               borderRadius: 'var(--radius-md)',
             }}>
-              <CheckCircle2 size={20} style={{ color: 'var(--status-success)' }} />
+              <CheckCircle2 size={18} style={{ color: 'var(--status-success)', flexShrink: 0 }} />
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--status-success)', fontWeight: 700 }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--status-success)', fontWeight: 700 }}>
                   SUDAH ABSEN HARI INI
                 </div>
-                <div className="mono" style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+                <div className="mono" style={{ fontSize: '0.8125rem', color: 'var(--text-primary)' }}>
                   Pukul {formatTimeHM(todayAttendance.jam_masuk)} WIB
                 </div>
               </div>
@@ -195,18 +196,18 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.625rem',
+              gap: '0.5rem',
               backgroundColor: 'var(--status-warning-bg)',
               border: '1px solid var(--status-warning-border)',
-              padding: '0.625rem 1rem',
+              padding: '0.5rem 0.875rem',
               borderRadius: 'var(--radius-md)',
             }}>
-              <Clock size={20} style={{ color: 'var(--status-warning)' }} />
+              <Clock size={18} style={{ color: 'var(--status-warning)', flexShrink: 0 }} />
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', fontWeight: 700 }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--status-warning)', fontWeight: 700 }}>
                   BELUM ABSEN HARI INI
                 </div>
-                <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                   Silakan scan wajah sekarang
                 </div>
               </div>
@@ -215,59 +216,60 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div style={{
-        display: 'flex',
-        gap: '0.5rem',
-        borderBottom: '1px solid var(--border-subtle)',
-        paddingBottom: '0.5rem',
-      }}>
+      {/* Navigation Sub-Tabs: Responsive Horizontal Scroll & Adaptive Labels */}
+      <div className="sub-tabs-container">
         <button
           onClick={() => setActiveTab('scan')}
-          className="btn"
+          className="btn tab-btn"
           style={{
             backgroundColor: activeTab === 'scan' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
             color: activeTab === 'scan' ? 'var(--biometric-cyan)' : 'var(--text-secondary)',
             border: `1px solid ${activeTab === 'scan' ? 'var(--border-active)' : 'var(--border-subtle)'}`,
-            padding: '0.5rem 1rem',
-            minHeight: '40px',
+            padding: '0.375rem 0.875rem',
+            minHeight: '38px',
+            fontSize: '0.8125rem',
             boxShadow: 'var(--shadow-sm)',
           }}
         >
-          <ScanFace size={18} />
-          <span>Kamera Scan Wajah</span>
+          <ScanFace size={16} />
+          <span className="tab-label-desktop">Kamera Scan Wajah</span>
+          <span className="tab-label-mobile">Scan Wajah</span>
         </button>
 
         <button
           onClick={() => setActiveTab('stats')}
-          className="btn"
+          className="btn tab-btn"
           style={{
             backgroundColor: activeTab === 'stats' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
             color: activeTab === 'stats' ? 'var(--biometric-cyan)' : 'var(--text-secondary)',
             border: `1px solid ${activeTab === 'stats' ? 'var(--border-active)' : 'var(--border-subtle)'}`,
-            padding: '0.5rem 1rem',
-            minHeight: '40px',
+            padding: '0.375rem 0.875rem',
+            minHeight: '38px',
+            fontSize: '0.8125rem',
             boxShadow: 'var(--shadow-sm)',
           }}
         >
-          <Percent size={18} />
-          <span>Persentase & Statistik</span>
+          <Percent size={16} />
+          <span className="tab-label-desktop">Persentase & Statistik</span>
+          <span className="tab-label-mobile">Statistik</span>
         </button>
 
         <button
           onClick={() => setActiveTab('history')}
-          className="btn"
+          className="btn tab-btn"
           style={{
             backgroundColor: activeTab === 'history' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
             color: activeTab === 'history' ? 'var(--biometric-cyan)' : 'var(--text-secondary)',
             border: `1px solid ${activeTab === 'history' ? 'var(--border-active)' : 'var(--border-subtle)'}`,
-            padding: '0.5rem 1rem',
-            minHeight: '40px',
+            padding: '0.375rem 0.875rem',
+            minHeight: '38px',
+            fontSize: '0.8125rem',
             boxShadow: 'var(--shadow-sm)',
           }}
         >
-          <History size={18} />
-          <span>Riwayat Absensi ({studentAttendances.length})</span>
+          <History size={16} />
+          <span className="tab-label-desktop">Riwayat Absensi ({studentAttendances.length})</span>
+          <span className="tab-label-mobile">Riwayat ({studentAttendances.length})</span>
         </button>
       </div>
 

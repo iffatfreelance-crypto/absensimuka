@@ -10,7 +10,6 @@ import {
   X, 
   Sparkles, 
   Trash2, 
-  ScanFace,
   Upload,
   Edit3,
   Eye,
@@ -21,23 +20,20 @@ import {
 import { supabase } from '../lib/supabase';
 import { detectFaceAndExtractDescriptor } from '../lib/faceApi';
 import { formatTimeHM } from '../lib/formatters';
-import { ScannerHUD } from './ScannerHUD';
 import type { Profile, Attendance } from '../types';
 
 interface AdminDashboardProps {
   students: Profile[];
   attendances: Attendance[];
   onStudentsUpdated: () => void;
-  onAttendanceLogged: (newAttendance: Attendance) => void;
+  onAttendanceLogged?: (newAttendance: Attendance) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   students,
   attendances,
   onStudentsUpdated,
-  onAttendanceLogged,
 }) => {
-  const [activeTab, setActiveTab] = useState<'matrix' | 'kiosk'>('matrix');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'sudah' | 'belum'>('all');
 
@@ -171,20 +167,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     try {
       const result = await detectFaceAndExtractDescriptor(enrolVideoRef.current);
 
+      // STRICT BIOMETRIC VALIDATION (Kacamata, Masker, Ruangan Gelap, Wajah Ganda, Jarak)
+      if (result.validationFailed) {
+        setRegisterStatus(`⚠️ ${result.validationMessage || 'Wajah tidak memenuhi standar biometrik yang ditentukan.'}`);
+        setRegisterLoading(false);
+        return;
+      }
+
       if (!result.descriptor || !result.box) {
         setRegisterStatus('Wajah tidak terdeteksi jelas. Posisikan wajah tepat menghadap kamera.');
-        setRegisterLoading(false);
-        return;
-      }
-
-      if (result.distanceStatus === 'too_far') {
-        setRegisterStatus('⚠️ Posisi wajah terlalu jauh dari kamera! Silakan mendekat ke kamera.');
-        setRegisterLoading(false);
-        return;
-      }
-
-      if (result.distanceStatus === 'too_close') {
-        setRegisterStatus('⚠️ Posisi wajah terlalu dekat! Mundurkan sedikit posisi kepala.');
         setRegisterLoading(false);
         return;
       }
@@ -226,6 +217,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       img.onload = async () => {
         try {
           const result = await detectFaceAndExtractDescriptor(img);
+          if (result.validationFailed) {
+            setRegisterStatus(`⚠️ ${result.validationMessage || 'Foto tidak memenuhi syarat biometrik (kacamata/masker/gelap/wajah ganda).'}`);
+            setRegisterLoading(false);
+            return;
+          }
           if (!result.descriptor) {
             setRegisterStatus('Tidak ada wajah yang terdeteksi pada foto ini. Gunakan foto dengan wajah tampak jelas.');
             setRegisterLoading(false);
@@ -373,20 +369,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     try {
       const result = await detectFaceAndExtractDescriptor(editVideoRef.current);
+      if (result.validationFailed) {
+        setEditStatus(`⚠️ ${result.validationMessage || 'Wajah tidak memenuhi standar biometrik yang ditentukan.'}`);
+        setEditLoading(false);
+        return;
+      }
       if (!result.descriptor || !result.box) {
         setEditStatus('Wajah tidak terdeteksi. Posisikan wajah tegak menghadap kamera.');
-        setEditLoading(false);
-        return;
-      }
-
-      if (result.distanceStatus === 'too_far') {
-        setEditStatus('⚠️ Posisi wajah terlalu jauh dari kamera! Silakan mendekat ke kamera.');
-        setEditLoading(false);
-        return;
-      }
-
-      if (result.distanceStatus === 'too_close') {
-        setEditStatus('⚠️ Posisi wajah terlalu dekat! Mundurkan sedikit posisi kepala.');
         setEditLoading(false);
         return;
       }
@@ -426,6 +415,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       img.onload = async () => {
         try {
           const result = await detectFaceAndExtractDescriptor(img);
+          if (result.validationFailed) {
+            setEditStatus(`⚠️ ${result.validationMessage || 'Foto tidak memenuhi syarat biometrik (kacamata/masker/gelap/wajah ganda).'}`);
+            setEditLoading(false);
+            return;
+          }
           if (!result.descriptor) {
             setEditStatus('Tidak ada wajah yang terdeteksi pada foto ini.');
             setEditLoading(false);
@@ -581,36 +575,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <button
-            onClick={() => setActiveTab('matrix')}
-            className="btn"
-            style={{
-              backgroundColor: activeTab === 'matrix' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-              color: activeTab === 'matrix' ? 'var(--biometric-cyan)' : 'var(--text-secondary)',
-              border: `1px solid ${activeTab === 'matrix' ? 'var(--border-active)' : 'var(--border-subtle)'}`,
-              minHeight: '40px',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            <Users size={16} />
-            <span>Rekap & Persentase Siswa</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('kiosk')}
-            className="btn"
-            style={{
-              backgroundColor: activeTab === 'kiosk' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-              color: activeTab === 'kiosk' ? 'var(--biometric-cyan)' : 'var(--text-secondary)',
-              border: `1px solid ${activeTab === 'kiosk' ? 'var(--border-active)' : 'var(--border-subtle)'}`,
-              minHeight: '40px',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            <ScanFace size={16} />
-            <span>Kiosk Scanner Umum</span>
-          </button>
-
-          <button
             onClick={() => {
               setIsRegisterOpen(true);
               setRegisterStatus('');
@@ -675,9 +639,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
-      {/* VIEW 1: REKAP & PERSENTASE SISWA TABLE */}
-      {activeTab === 'matrix' && (
-        <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+      {/* VIEW: REKAP & PERSENTASE SISWA TABLE */}
+      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
           {/* Table Header Filter Toolbar */}
           <div style={{
             padding: '1.25rem',
@@ -895,23 +858,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           )}
         </div>
-      )}
-
-      {/* VIEW 2: KIOSK SCANNER UMUM */}
-      {activeTab === 'kiosk' && (
-        <div>
-          <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>Mode Kiosk Presensi Sekolah</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
-              Tempatkan perangkat ini di pintu masuk sekolah. Siswa cukup berdiri di depan kamera untuk melakukan presensi otomatis.
-            </p>
-          </div>
-          <ScannerHUD
-            registeredStudents={students}
-            onAttendanceLogged={onAttendanceLogged}
-          />
-        </div>
-      )}
 
       {/* ======================================================== */}
       {/* MODAL 1: DAFTARKAN SISWA BARU (CREATE)                  */}

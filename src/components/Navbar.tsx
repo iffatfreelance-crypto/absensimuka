@@ -39,13 +39,13 @@ export const Navbar: React.FC<NavbarProps> = ({
       }}>
         {/* Brand & Logo */}
         <div 
-          onClick={() => onViewChange('kiosk')} 
-          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+          onClick={() => onViewChange(currentUser ? (currentUser.role === 'admin' ? 'admin' : 'siswa') : 'kiosk')} 
+          style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', cursor: 'pointer' }}
           title="Ke Halaman Utama"
         >
           <div style={{
-            width: '40px',
-            height: '40px',
+            width: '36px',
+            height: '36px',
             borderRadius: 'var(--radius-md)',
             backgroundColor: 'var(--bg-elevated)',
             border: '1px solid var(--border-active)',
@@ -54,59 +54,61 @@ export const Navbar: React.FC<NavbarProps> = ({
             justifyContent: 'center',
             color: 'var(--biometric-cyan)',
             boxShadow: '0 2px 8px var(--biometric-cyan-glow)',
+            flexShrink: 0,
           }}>
-            <ScanFace size={24} />
+            <ScanFace size={22} />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontWeight: 800, fontSize: '1.125rem', letterSpacing: '-0.02em' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+              <span style={{ fontWeight: 800, fontSize: '1.0625rem', letterSpacing: '-0.02em' }}>
                 Absen<span style={{ color: 'var(--biometric-cyan)' }}>Muka</span>
               </span>
-              <span className="badge badge-info" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem' }}>
+              <span className="badge badge-info" style={{ fontSize: '0.625rem', padding: '0.1rem 0.4rem' }}>
                 v1.0
               </span>
             </div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <p className="hide-on-mobile" style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
               Presensi Biometrik Wajah
             </p>
           </div>
         </div>
 
         {/* Navigation Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
 
           {/* Download APK Button */}
           <button
             onClick={onOpenDownloadApk}
             className="btn btn-secondary"
-            style={{ fontSize: '0.8125rem', minHeight: '38px', padding: '0.375rem 0.75rem' }}
+            style={{ fontSize: '0.75rem', minHeight: '34px', padding: '0.25rem 0.625rem' }}
             title="Download Aplikasi Android (.APK)"
           >
-            <Download size={15} style={{ color: 'var(--status-success)' }} />
+            <Download size={14} style={{ color: 'var(--status-success)' }} />
             <span>APK</span>
           </button>
 
           {/* User Auth Section (Only displayed when logged in) */}
           {currentUser && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
               {/* User badge */}
               <div 
                 onClick={() => onViewChange(currentUser.role === 'admin' ? 'admin' : 'siswa')}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
+                  gap: '0.375rem',
                   backgroundColor: 'var(--bg-card)',
-                  padding: '0.375rem 0.75rem',
+                  padding: '0.25rem 0.625rem',
                   borderRadius: 'var(--radius-md)',
                   border: `1px solid ${activeView === currentUser.role ? 'var(--border-active)' : 'var(--border-subtle)'}`,
                   cursor: 'pointer',
+                  minHeight: '34px',
                 }}
                 title="Buka Halaman Saya"
               >
                 <div style={{
-                  width: '26px',
-                  height: '26px',
+                  width: '24px',
+                  height: '24px',
                   borderRadius: '50%',
                   backgroundColor: currentUser.role === 'admin' ? 'var(--status-warning-bg)' : 'var(--status-info-bg)',
                   display: 'flex',
@@ -116,14 +118,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   border: `1px solid ${currentUser.role === 'admin' ? 'var(--status-warning-border)' : 'var(--status-info-border)'}`,
+                  flexShrink: 0,
                 }}>
-                  {currentUser.role === 'admin' ? <Shield size={14} /> : <User size={14} />}
+                  {currentUser.role === 'admin' ? <Shield size={13} /> : <User size={13} />}
                 </div>
                 <div style={{ lineHeight: 1.1 }}>
-                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {currentUser.nama.split(' ')[0]}
                   </div>
-                  <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                  <div className="hide-on-mobile" style={{ fontSize: '0.625rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                     {currentUser.role}
                   </div>
                 </div>
@@ -133,10 +136,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onLogout}
                 className="btn btn-secondary"
-                style={{ minHeight: '38px', padding: '0.375rem 0.625rem', color: 'var(--status-danger)' }}
+                style={{ minHeight: '34px', padding: '0.25rem 0.5rem', color: 'var(--status-danger)' }}
                 title="Keluar (Logout)"
               >
-                <LogOut size={16} />
+                <LogOut size={15} />
               </button>
             </div>
           )}

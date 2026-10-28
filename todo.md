@@ -1,0 +1,3 @@
+- [x] 1. Memperbaiki scan wajah: memperketat aturan kacamata, masker, ruangan gelap, dan wajah ganda (berlaku di presensi siswa & pendaftaran admin)
+- [x] 2. Merapikan UI/UX di handphone: tombol aksi selalu terlihat, sub-tabs responsif tidak terpotong, navbar ramping
+- [x] 3. Hapus kiosk scanner umum di halaman admin karena tidak diperlukan

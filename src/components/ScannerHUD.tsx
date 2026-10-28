@@ -307,29 +307,28 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
         timeoutPromise
       ]);
 
+      // BIOMETRIC VALIDATION CHECKS (Strict: Kacamata, Masker, Ruangan Gelap, Wajah Ganda, Jarak)
+      if (result.validationFailed) {
+        biometricAudio.playReject();
+        setScanState('rejected');
+        setRejectReason(result.validationMessage || 'Wajah tidak memenuhi standar biometrik yang ditentukan.');
+        setStatusMessage(
+          result.rejectReasonType === 'glasses_detected' ? 'Kacamata Terdeteksi: Harap lepas kacamata' :
+          result.rejectReasonType === 'mask_detected' ? 'Masker Terdeteksi: Harap buka masker' :
+          result.rejectReasonType === 'multiple_faces' ? 'Wajah Ganda: Hanya 1 orang diperbolehkan' :
+          result.rejectReasonType === 'low_light' ? 'Ruangan Terlalu Gelap: Cari area lebih terang' :
+          result.rejectReasonType === 'too_far' ? 'Jarak Terlalu Jauh: Silakan mendekat' :
+          result.rejectReasonType === 'too_close' ? 'Terlalu Dekat: Mundurkan sedikit wajah' :
+          'Validasi Wajah Ditolak'
+        );
+        startCooldown(3.5);
+        return;
+      }
+
       if (!result.descriptor || !result.box) {
         setScanState('standby');
         setStatusMessage('Wajah tidak terdeteksi jelas. Harap hadap tegak ke kamera.');
         isProcessingRef.current = false;
-        return;
-      }
-
-      // 2. VALIDASI JARAK: Tidak boleh terlalu jauh atau terlalu dekat
-      if (result.distanceStatus === 'too_far') {
-        biometricAudio.playReject();
-        setScanState('rejected');
-        setRejectReason('Posisi wajah Anda terlalu jauh dari kamera! Silakan mendekat hingga wajah pas di dalam bingkai oval.');
-        setStatusMessage('Jarak Terlalu Jauh: Silakan mendekat.');
-        startCooldown(3.5);
-        return;
-      }
-
-      if (result.distanceStatus === 'too_close') {
-        biometricAudio.playReject();
-        setScanState('rejected');
-        setRejectReason('Posisi wajah Anda terlalu dekat dengan kamera! Silakan mundurkan sedikit wajah Anda.');
-        setStatusMessage('Terlalu Dekat: Mundurkan sedikit wajah Anda.');
-        startCooldown(3.5);
         return;
       }
 
@@ -528,14 +527,14 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
         transition: 'all 0.2s ease',
       }}>
         {/* TOP CAMERA HEADER BAR (Clean, outside the camera viewport) */}
-        <div style={{
-          padding: '0.875rem 1.25rem',
+        <div className="mobile-compact-header" style={{
+          padding: '0.625rem 1rem',
           backgroundColor: '#ffffff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           borderBottom: '1px solid var(--border-subtle)',
-          gap: '0.75rem',
+          gap: '0.5rem',
           flexWrap: 'wrap',
         }}>
           {/* Left: Camera Status Indicator */}
@@ -599,14 +598,14 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
         </div>
 
         {/* GUIDANCE BANNER: Fresh, Calm School Information Strip */}
-        <div style={{
-          padding: '0.625rem 1.25rem',
+        <div className="mobile-compact-header" style={{
+          padding: '0.5rem 1rem',
           backgroundColor: distanceStatus === 'optimal' ? '#f0fdf4' : distanceStatus === 'too_far' || distanceStatus === 'too_close' ? '#fffbeb' : '#f8fafc',
           borderBottom: '1px solid var(--border-subtle)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '0.75rem',
+          gap: '0.5rem',
           fontSize: '0.8125rem',
           flexWrap: 'wrap',
           transition: 'background-color 0.2s ease',
@@ -651,17 +650,7 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
         </div>
 
         {/* CAMERA VIEWPORT (Clean, 100% Unobstructed Video Feed) */}
-        <div style={{
-          position: 'relative',
-          width: '100%',
-          aspectRatio: '4/3',
-          maxHeight: '480px',
-          backgroundColor: '#0f172a',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-        }}>
+        <div className="scanner-viewport">
           <video
             ref={videoRef}
             playsInline
@@ -697,11 +686,7 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
 
           {/* SLEEK BIOMETRIC OVAL GUIDE */}
           {cameraActive && scanState !== 'success' && scanState !== 'rejected' && (
-            <div style={{
-              position: 'absolute',
-              width: '230px',
-              height: '290px',
-              borderRadius: '115px / 145px',
+            <div className="scanner-oval" style={{
               border: `2.5px ${distanceStatus === 'optimal' ? 'solid' : 'dashed'} ${
                 distanceStatus === 'optimal' 
                   ? '#10b981' 
@@ -709,27 +694,22 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
                   ? '#f59e0b' 
                   : 'rgba(255, 255, 255, 0.7)'
               }`,
-              pointerEvents: 'none',
               boxShadow: distanceStatus === 'optimal' 
                 ? '0 0 24px rgba(16, 185, 129, 0.35)' 
                 : distanceStatus === 'too_far' || distanceStatus === 'too_close'
                 ? '0 0 20px rgba(245, 158, 11, 0.25)'
                 : '0 0 20px rgba(0, 0, 0, 0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.15s ease',
             }}>
               {/* Single Minimal Frosted Status Pill Below Oval */}
               <div style={{
                 position: 'absolute',
-                bottom: '-28px',
+                bottom: '-24px',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 color: distanceStatus === 'optimal' ? '#a7f3d0' : '#ffffff',
-                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                backgroundColor: 'rgba(15, 23, 42, 0.85)',
                 backdropFilter: 'blur(8px)',
-                padding: '4px 12px',
+                padding: '3px 10px',
                 borderRadius: '9999px',
                 border: `1px solid ${
                   distanceStatus === 'optimal' ? '#10b981' : 'rgba(255, 255, 255, 0.2)'
@@ -794,19 +774,19 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
             <div style={{
               position: 'absolute',
               inset: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backgroundColor: 'rgba(255, 255, 255, 0.96)',
               backdropFilter: 'blur(10px)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '1.5rem',
+              padding: '1rem',
               zIndex: 30,
               animation: 'fadeIn 0.2s ease-out',
             }}>
               <div style={{
-                width: '68px',
-                height: '68px',
+                width: '48px',
+                height: '48px',
                 borderRadius: '50%',
                 backgroundColor: '#ecfdf5',
                 border: '2px solid #10b981',
@@ -814,51 +794,51 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#10b981',
-                marginBottom: '1rem',
-                boxShadow: '0 4px 20px rgba(16, 185, 129, 0.25)',
+                marginBottom: '0.5rem',
+                boxShadow: '0 4px 15px rgba(16, 185, 129, 0.2)',
               }}>
-                <CheckCircle2 size={40} />
+                <CheckCircle2 size={28} />
               </div>
 
               <span style={{
-                fontSize: '0.75rem',
+                fontSize: '0.7rem',
                 fontWeight: 700,
                 color: '#047857',
                 backgroundColor: '#dcfce7',
-                padding: '3px 10px',
+                padding: '2px 8px',
                 borderRadius: '9999px',
                 border: '1px solid #86efac',
-                marginBottom: '0.5rem',
+                marginBottom: '0.25rem',
               }}>
                 {alreadyCheckedIn ? 'SUDAH ABSEN HARI INI' : 'PRESENSI BERHASIL'}
               </span>
 
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', textAlign: 'center', marginBottom: '0.25rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', textAlign: 'center', marginBottom: '0.125rem' }}>
                 {verifiedStudent.nama}
               </h2>
-              <p className="mono" style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1rem' }}>
+              <p className="mono" style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem' }}>
                 NIS: {verifiedStudent.nis || '-'}
               </p>
 
               <div style={{
                 display: 'flex',
-                gap: '1.25rem',
+                gap: '1rem',
                 backgroundColor: '#f8fafc',
-                padding: '0.75rem 1.25rem',
-                borderRadius: '10px',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
                 border: '1px solid #e2e8f0',
-                marginBottom: '1.25rem',
+                marginBottom: '0.75rem',
               }}>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.6875rem', fontWeight: 600, color: '#64748b' }}>WAKTU</div>
-                  <div className="mono" style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--biometric-cyan)' }}>
+                  <div style={{ fontSize: '0.625rem', fontWeight: 600, color: '#64748b' }}>WAKTU</div>
+                  <div className="mono" style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--biometric-cyan)' }}>
                     {formatTimeHM(verifiedTime) || '07:15'} WIB
                   </div>
                 </div>
                 <div style={{ width: '1px', backgroundColor: '#e2e8f0' }} />
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.6875rem', fontWeight: 600, color: '#64748b' }}>AKURASI</div>
-                  <div className="mono" style={{ fontSize: '1rem', fontWeight: 700, color: '#10b981' }}>
+                  <div style={{ fontSize: '0.625rem', fontWeight: 600, color: '#64748b' }}>AKURASI</div>
+                  <div className="mono" style={{ fontSize: '0.875rem', fontWeight: 700, color: '#10b981' }}>
                     {confidenceScore}% COCOK
                   </div>
                 </div>
@@ -867,9 +847,9 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
               <button
                 onClick={resetScanner}
                 className="btn btn-secondary"
-                style={{ minHeight: '38px', fontSize: '0.8125rem' }}
+                style={{ minHeight: '34px', padding: '0.25rem 0.875rem', fontSize: '0.75rem' }}
               >
-                <RefreshCw size={14} />
+                <RefreshCw size={13} />
                 <span>{cooldownCountdown > 0 ? `Pindai Ulang (${cooldownCountdown}s)` : 'Pindai Ulang'}</span>
               </button>
             </div>
@@ -886,13 +866,13 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '1.5rem',
+              padding: '1rem',
               zIndex: 30,
               animation: 'fadeIn 0.2s ease-out',
             }}>
               <div style={{
-                width: '68px',
-                height: '68px',
+                width: '48px',
+                height: '48px',
                 borderRadius: '50%',
                 backgroundColor: '#fff1f2',
                 border: '2px solid #e11d48',
@@ -900,56 +880,56 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#e11d48',
-                marginBottom: '0.875rem',
-                boxShadow: '0 4px 20px rgba(225, 29, 72, 0.2)',
+                marginBottom: '0.5rem',
+                boxShadow: '0 4px 15px rgba(225, 29, 72, 0.15)',
               }}>
-                <XCircle size={40} />
+                <XCircle size={28} />
               </div>
 
               <span style={{
-                fontSize: '0.75rem',
+                fontSize: '0.7rem',
                 fontWeight: 700,
                 color: '#be123c',
                 backgroundColor: '#ffe4e6',
-                padding: '3px 10px',
+                padding: '2px 8px',
                 borderRadius: '9999px',
                 border: '1px solid #fecdd3',
-                marginBottom: '0.5rem',
+                marginBottom: '0.25rem',
               }}>
                 ABSEN DITOLAK
               </span>
 
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', textAlign: 'center', marginBottom: '0.375rem' }}>
-                Wajah Tidak Terverifikasi
+              <h2 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#0f172a', textAlign: 'center', marginBottom: '0.25rem' }}>
+                Wajah Tidak Memenuhi Syarat
               </h2>
               <p style={{
-                fontSize: '0.8125rem',
+                fontSize: '0.75rem',
                 color: '#475569',
                 textAlign: 'center',
-                maxWidth: '360px',
-                lineHeight: 1.45,
-                marginBottom: '1rem',
+                maxWidth: '320px',
+                lineHeight: 1.35,
+                marginBottom: '0.625rem',
               }}>
                 {rejectReason}
               </p>
 
               {cooldownCountdown > 0 && (
                 <div style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.6875rem',
                   color: '#64748b',
-                  marginBottom: '1rem',
+                  marginBottom: '0.625rem',
                 }}>
                   Pindai ulang otomatis dalam <strong>{cooldownCountdown} detik</strong>...
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <button
                   onClick={resetScanner}
                   className="btn btn-primary"
-                  style={{ minHeight: '40px', padding: '0.5rem 1.25rem' }}
+                  style={{ minHeight: '36px', padding: '0.375rem 1rem', fontSize: '0.75rem' }}
                 >
-                  <RefreshCw size={14} />
+                  <RefreshCw size={13} />
                   <span>Coba Pindai Lagi</span>
                 </button>
               </div>
@@ -967,13 +947,13 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '1.5rem',
+              padding: '1rem',
               zIndex: 30,
               animation: 'fadeIn 0.2s ease-out',
             }}>
               <div style={{
-                width: '60px',
-                height: '60px',
+                width: '48px',
+                height: '48px',
                 borderRadius: '50%',
                 backgroundColor: '#fffbeb',
                 border: '2px solid #f59e0b',
@@ -981,18 +961,18 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#f59e0b',
-                marginBottom: '0.75rem',
+                marginBottom: '0.5rem',
               }}>
-                <AlertTriangle size={32} />
+                <AlertTriangle size={24} />
               </div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem' }}>
                 Pemindaian Terganggu
               </h3>
-              <p style={{ fontSize: '0.8125rem', color: '#64748b', textAlign: 'center', maxWidth: '320px', marginBottom: '1.25rem' }}>
+              <p style={{ fontSize: '0.75rem', color: '#64748b', textAlign: 'center', maxWidth: '300px', marginBottom: '0.875rem', lineHeight: 1.35 }}>
                 {statusMessage}
               </p>
-              <button onClick={() => { resetScanner(); startCamera(); }} className="btn btn-primary">
-                <RefreshCw size={15} />
+              <button onClick={() => { resetScanner(); startCamera(); }} className="btn btn-primary" style={{ minHeight: '38px', padding: '0.375rem 1rem', fontSize: '0.8125rem' }}>
+                <RefreshCw size={14} />
                 <span>Muat Ulang Kamera</span>
               </button>
             </div>
@@ -1000,13 +980,13 @@ export const ScannerHUD: React.FC<ScannerHUDProps> = ({
         </div>
 
         {/* BOTTOM CARD: Status Information & Actions */}
-        <div style={{
-          padding: '1rem 1.25rem',
+        <div className="mobile-action-bar" style={{
+          padding: '0.75rem 1rem',
           backgroundColor: '#ffffff',
           borderTop: '1px solid var(--border-subtle)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.875rem',
+          gap: '0.625rem',
         }}>
           {/* Status ticker */}
           <div style={{
